@@ -1,0 +1,12 @@
+#gitignore timeweb
+/.idea/
+/.vscode/
+
+/venv/
+
+*.pyc
+*.tar.gz
+*.env
+
+.tox
+
