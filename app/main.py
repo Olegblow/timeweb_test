@@ -16,8 +16,13 @@ from services import validate_data
 
 
 app = Flask(__name__)
-app.config['CELERY_BROKER_URL'] = 'amqp://rabbit:pass123@localhost:5672/rabbit'
-app.config['CELERY_RESULT_BACKEND'] = 'rpc://rabbit:pass123@localhost:5672/rabbit'
+RABBITMQ_USER = os.getenv('RABBITMQ_DEFAULT_USER', '')
+RABBITMQ_PASS = os.getenv('RABBITMQ_DEFAULT_PASS', '')
+RABBITMQ_VHOST = os.getenv('RABBITMQ_DEFAULT_VHOST', '')
+RABBITMQ_HOST = os.getenv('RABBIT_HOST', '')
+RABBIT_URL = f'{RABBITMQ_USER}:{RABBITMQ_PASS}{RABBITMQ_HOST}5672/{RABBITMQ_VHOST}'
+app.config['CELERY_BROKER_URL'] = f'amqp://{RABBIT_URL}'
+app.config['CELERY_RESULT_BACKEND'] = f'rpc://{RABBIT_URL}'
 celery: Celery = init_celery(app)
 
 
@@ -31,7 +36,7 @@ class TaskHandler(MethodView):
     ID - идентификатор задачи.
     """
 
-    def get(self, task_id) -> Response:
+    def get(self, task_id:str) -> Response:
         result = AsyncResult(task_id, app=celery).state
         response = {'status': result}
         if result == 'SUCCESS':
@@ -73,4 +78,4 @@ def task_pars(site_url: str) -> None:
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=8000)
