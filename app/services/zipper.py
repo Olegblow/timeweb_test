@@ -2,7 +2,7 @@ import logging
 import os
 import shutil
 
-from services import ParsException
+from services.errors import ParsException
 
 
 log = logging.getLogger(__name__)

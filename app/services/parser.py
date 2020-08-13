@@ -1,3 +1,4 @@
+import logging
 import os
 import tempfile
 
@@ -6,8 +7,12 @@ from pywebcopy import save_website
 from services.zipper import create_zip
 
 
+log = logging.getLogger(__name__)
+
+
 def parser_site(url: str, task_id: str) -> None:
     parser = Parser(url, task_id)
+    log.info('Parsing web site: %s .', url)
     parser.pars()
 
 
